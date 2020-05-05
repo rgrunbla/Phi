@@ -1,0 +1,141 @@
+syntax = "proto3";
+
+message GlobalContainer {
+    enum MessageType {
+        META = 0;
+        MESO = 1;
+    }
+    MessageType type = 1;
+    bytes content = 2;
+}
+
+message AgentInfo {
+    string agent_type = 1;
+    repeated float agent_position = 2;
+    repeated float agent_orientation = 3;
+    float angle = 4;
+    float goal = 5;
+}
+
+message AgentInfos {
+    repeated AgentInfo infos = 1;
+}
+
+/* Visualization message */
+message Viz {
+    enum MessageType {
+        POSITIONS = 0;
+        POWERS = 1;
+        THROUGHPUTS = 2;
+    }
+    MessageType type = 1;
+    int32 simulation_id = 2;
+    double clock = 3;
+    bytes content = 4;
+}
+
+message Power {
+    int32 receiver_agent_id = 1;
+    int32 sender_agent_id = 2;
+    repeated float power = 3;
+}
+
+message Powers {
+    repeated Power powers = 1;
+}
+
+message Throughput {
+    string source = 1;
+    string destination = 2;
+    float throughput = 3;
+}
+
+message Throughputs {
+    repeated Throughput throughputs = 1;
+}
+/* Initialization message */
+message Meta {
+    enum MessageType {
+        INIT_QUERY = 0;
+        INIT_ANSWER = 1;
+        END_QUERY = 2;
+        END_ANSWER = 3;
+    }
+    MessageType type = 1;
+    bytes content = 2;
+}
+
+message InitQuery {
+    int32 agent_number = 1;
+    repeated AgentInfo info = 2;
+}
+
+message InitAnswer {
+    int32 simulation_id = 1;
+}
+
+message EndQuery {
+    int32 simulation_id = 1;
+}
+
+message EndAnswer {
+    repeated float data = 1;
+}
+
+message Meso {
+    enum MessageType {
+        /* Propagation Loss */
+        LOSS_QUERY = 0; /* NS-3 to Phi */
+        LOSS_ANSWER = 1; /* Phi to NS-3 */
+        
+        /* Propagation Delay */
+        DELAY_QUERY = 2; /* NS-3 to Phi */
+        DELAY_ANSWER = 3; /* Phi to NS-3 */
+
+        /* Agents positions */
+        POSITIONS = 4; /* Bi-directional */
+        
+        /* End of the simulation */
+        END = 5; /* NS-3 to Phi */
+
+        /* A frame has been received by a node */
+        MONITOR_QUERY = 6; /* NS-3 to Phi */
+        MONITOR_ANSWER = 7; /* Phi to NS-3 */
+    }
+    MessageType type = 1;
+    int32 simulation_id = 2;
+    bytes content = 3;
+}
+
+message LossQuery {
+    double clock = 1;
+    int32 source_agent_id = 2;
+    int32 dest_agent_id = 3;
+    double power = 4;
+}
+
+message LossAnswer {
+    double power = 1;
+}
+
+message DelayQuery {
+    double clock = 1;
+    int32 source_agent_id = 2;
+    int32 dest_agent_id = 3;
+}
+
+message DelayAnswer {
+    double delay = 1;
+}
+
+message Positions {
+    repeated float agent_positions = 1;
+    repeated float agent_orientations = 2;
+}
+
+message MonitorQuery {
+    double clock = 1;
+    int32 source_agent_id = 2;
+    int32 dest_agent_id = 3;
+    double power = 4;
+}
