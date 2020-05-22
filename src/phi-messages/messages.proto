@@ -9,12 +9,95 @@ message GlobalContainer {
     bytes content = 2;
 }
 
+message Meta {
+    enum MessageType {
+        INIT_QUERY = 0;
+        INIT_ANSWER = 1;
+        END_QUERY = 2;
+    }
+    MessageType type = 1;
+    bytes content = 2;
+}
+
+message Meso {
+    enum MessageType {
+        /* Propagation Loss */
+        LOSS_QUERY = 0; /* NS-3 to Phi */
+        LOSS_ANSWER = 1; /* Phi to NS-3 */
+        
+        /* Propagation Delay */
+        DELAY_QUERY = 2; /* NS-3 to Phi */
+        DELAY_ANSWER = 3; /* Phi to NS-3 */
+
+        /* Agents positions */
+        POSITIONS = 4; /* Bi-directional */
+        
+        /* End of the simulation */
+        END = 5; /* NS-3 to Phi */
+
+        /* A frame has been received by a node */
+        MONITOR_QUERY = 6; /* NS-3 to Phi */
+        MONITOR_ANSWER = 7; /* Phi to NS-3 */
+    }
+    MessageType type = 1;
+    int32 simulation_id = 2;
+    bytes content = 3;
+}
+
+message Integers {
+    repeated int32 values = 1;
+}
+
+message Floats {
+    repeated float values = 1;
+}
+
+message Doubles {
+    repeated double values = 1;
+}
+
+message Strings {
+    repeated string values = 1;
+}
+
+message Value {
+    string name = 1;
+    oneof content {
+        Integers integers = 2;
+        Floats floats = 3;
+        Doubles doubles = 4;
+        Strings strings = 5;
+    }
+}
+
+/* Map */
+
+message MapValue {
+    oneof key {
+        int32 int_key = 1;
+        float float_key = 2;
+        double double_key = 3;
+        string string_key = 4;
+    }
+    oneof value {
+        Integers integers = 5;
+        Floats floats = 6;
+        Doubles doubles = 7;
+        Strings strings = 8;
+    }
+}
+
+message Map {
+    string name = 1;
+    repeated MapValue values = 2;
+}
+
 message AgentInfo {
     string agent_type = 1;
     repeated float agent_position = 2;
     repeated float agent_orientation = 3;
-    float angle = 4;
-    float goal = 5;
+    repeated Value values = 4;
+    repeated Map maps = 5;
 }
 
 message AgentInfos {
@@ -54,16 +137,6 @@ message Throughputs {
     repeated Throughput throughputs = 1;
 }
 /* Initialization message */
-message Meta {
-    enum MessageType {
-        INIT_QUERY = 0;
-        INIT_ANSWER = 1;
-        END_QUERY = 2;
-        END_ANSWER = 3;
-    }
-    MessageType type = 1;
-    bytes content = 2;
-}
 
 message InitQuery {
     int32 agent_number = 1;
@@ -76,35 +149,6 @@ message InitAnswer {
 
 message EndQuery {
     int32 simulation_id = 1;
-}
-
-message EndAnswer {
-    repeated float data = 1;
-}
-
-message Meso {
-    enum MessageType {
-        /* Propagation Loss */
-        LOSS_QUERY = 0; /* NS-3 to Phi */
-        LOSS_ANSWER = 1; /* Phi to NS-3 */
-        
-        /* Propagation Delay */
-        DELAY_QUERY = 2; /* NS-3 to Phi */
-        DELAY_ANSWER = 3; /* Phi to NS-3 */
-
-        /* Agents positions */
-        POSITIONS = 4; /* Bi-directional */
-        
-        /* End of the simulation */
-        END = 5; /* NS-3 to Phi */
-
-        /* A frame has been received by a node */
-        MONITOR_QUERY = 6; /* NS-3 to Phi */
-        MONITOR_ANSWER = 7; /* Phi to NS-3 */
-    }
-    MessageType type = 1;
-    int32 simulation_id = 2;
-    bytes content = 3;
 }
 
 message LossQuery {
