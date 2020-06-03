@@ -8,7 +8,6 @@
 #include <glm/gtx/string_cast.hpp>
 #include <phi-messages/messages.pb.h>
 
-
 Simulation::Simulation() {
     this->clock = std::shared_ptr<Clock>(new Clock());
     this->clock->set_time(0.0);
@@ -47,51 +46,72 @@ int32_t Simulation::get_id() {
 void Simulation::loop() {
     this->iter = this->iter + 1;
 
-    if(this->event_queue.empty()) {
-        std::cout << "Queue of events is empty.\n";
-        return;
+    while(true) {
+        /* We execute all the events before the cursor */
+        if(!this->event_queue.empty()) {        
+            /* We have at least one event in the queue */
+            Event event = this->event_queue.top();
+
+            if(event.get_start_date() <= this->clock->get_cursor()) {
+                /* This event can be executed as it happens before the cursor */
+
+                /* We jump to the next event (phase one) */
+                double elapsed_time = event.get_start_date() - this->clock->get_time();
+                this->clock->set_time(event.get_start_date());
+                
+                /* We execute all events that unconditionally occur between the last clock value
+                and that time. This corresponds to the simulation of the environment, more specifically
+                to the things that can be integrated over any period of time */
+                /* Event 1: Integrate the acceleration, speed, position… */
+                for(std::shared_ptr<Agent> agent: this->agents) {
+                    agent->set_position(agent->get_position() + agent->get_speed() * elapsed_time);
+                }
+
+                for(std::shared_ptr<Agent> agent: this->agents) {
+                    glm::dvec3 agent_angular_velocity = agent->get_angular_velocity();
+                    glm::dquat q = glm::dquat(0.0, agent_angular_velocity.x, agent_angular_velocity.y, agent_angular_velocity.z);
+                    agent->set_spin(0.5 * q * agent->get_orientation());
+                    agent->set_orientation(agent->get_orientation() + agent->get_spin() * elapsed_time);
+                }
+
+                /* Event 2: Custom events that should happen before the decisions of the agents */
+                this->environment();
+
+                /* We execute the event */
+                event.execute();
+
+                /* Remove the event from the queue */    
+                this->event_queue.pop();
+            } else {
+                /* The top event is scheduled after the cursor */
+                break;
+            }
+        } else {
+            /* No event to be executed */
+            break;
+        }
     }
 
-    while(true) {
-        Event event = this->event_queue.top();
+    double elapsed_time = this->clock->get_cursor() - this->clock->get_time();
+    if(elapsed_time > 0.0) {
+        this->clock->set_time(this->clock->get_cursor());
+        for(std::shared_ptr<Agent> agent: this->agents) {
+            agent->set_position(agent->get_position() + agent->get_speed() * elapsed_time);
+        }
 
-        if(event.get_start_date() <= this->clock->get_cursor()) {
-            /* We jump to the next event (phase one) */
-            double elapsed_time = event.get_start_date() - this->clock->get_time();
-            this->clock->set_time(event.get_start_date());
-            
-            /* We execute all events that unconditionally occur between the last clock value
-            and that time. This corresponds to the simulation of the environment, more specifically
-            to the things that can be integrated over any period of time */
+        for(std::shared_ptr<Agent> agent: this->agents) {
+            glm::dvec3 agent_angular_velocity = agent->get_angular_velocity();
+            glm::dquat q = glm::dquat(0.0, agent_angular_velocity.x, agent_angular_velocity.y, agent_angular_velocity.z);
+            agent->set_spin(0.5 * q * agent->get_orientation());
+            agent->set_orientation(agent->get_orientation() + agent->get_spin() * elapsed_time);
+        }
 
-            /* Event 1: Integrate the acceleration, speed, position… */
-            for(std::shared_ptr<Agent> agent: this->agents) {
-                agent->set_position(agent->get_position() + agent->get_speed() * elapsed_time);
-            }
-            
-
-            for(std::shared_ptr<Agent> agent: this->agents) {
-                glm::dvec3 agent_angular_velocity = agent->get_angular_velocity();
-                glm::dquat q = glm::dquat(0.0, agent_angular_velocity.x, agent_angular_velocity.y, agent_angular_velocity.z);
-                agent->set_spin(0.5 * q * agent->get_orientation());
-                agent->set_orientation(agent->get_orientation() + agent->get_spin() * elapsed_time);
-            }
-            
-
-            /* Event 2: Custom events that should happen before the decisions of the agents */
-            this->environment();
-
-            /* We execute the event */
-            event.execute();
-
-            /* Remove the event from the queue */    
-            this->event_queue.pop();
-        } else {
-            if((this->iter % 100) == 0) {
-                this->plot();
-                this->iter = 1;
-            }
-            return;
+        this->environment();
+    }
+    if(VIZ) {
+        if((this->iter % 100) == 0) {
+            this->plot();
+            this->iter = 1;
         }
     }
 }

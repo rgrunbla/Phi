@@ -9,6 +9,8 @@
 #include <zmq.hpp>
 #include "event.h"
 
+#define VIZ 1
+
 class Agent;
 
 template<typename T> Agent * createInstance() { return new T; }

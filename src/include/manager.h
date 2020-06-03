@@ -49,8 +49,11 @@ Manager<T>::Manager(map_type map) {
     this->zmq_socket = std::shared_ptr<zmq::socket_t>(new zmq::socket_t(*(this->zmq_context), zmq::socket_type::rep));
     this->zmq_socket->bind("ipc:///tmp/2");
 
-    this->zmq_visualization_socket = std::shared_ptr<zmq::socket_t>(new zmq::socket_t(*(this->zmq_context), zmq::socket_type::pub));
-    this->zmq_visualization_socket->connect("ipc:///tmp/1");
+    if(VIZ) {
+        this->zmq_visualization_socket = std::shared_ptr<zmq::socket_t>(new zmq::socket_t(*(this->zmq_context), zmq::socket_type::pub));
+        this->zmq_visualization_socket->connect("ipc:///tmp/1");
+    }
+    
     this->map = map;
 }
 

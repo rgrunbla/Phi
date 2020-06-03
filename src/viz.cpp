@@ -47,6 +47,7 @@ class DroneSimulation : public Simulation {
         DroneSimulation() {
             map_type map;
             map["Drone"] = &createInstance<Drone>;
+            map["Client"] = &createInstance<Drone>;
             this->set_map(map);
         }
 
@@ -69,7 +70,10 @@ class DroneSimulation : public Simulation {
         int i = 0;
         for (auto agent_info: agents.infos()) {
             if(i >= this->get_number_of_agents()) {
+                std::cout << "New agent type: \n" << std::flush;
+                std::cout << agent_info.agent_type() << "\n" << std::flush;
                 std::shared_ptr<Agent> agent = this->new_agent(agent_info.agent_type());
+                std::cout << "Hello\n" << std::flush;
                 this->add_agent(agent);
                 this->set_number_of_agents(this->get_number_of_agents() + 1);
             }
@@ -78,7 +82,7 @@ class DroneSimulation : public Simulation {
             this->agents[i]->set_position({agent_info.agent_position(0), agent_info.agent_position(1), agent_info.agent_position(2)});
             this->agents[i]->set_orientation({agent_info.agent_orientation(0), agent_info.agent_orientation(1), agent_info.agent_orientation(2), agent_info.agent_orientation(3)});
             for(Value val : agent_info.values()) {
-                // std::cout << "Value '" << val.name() << "' received.\n";
+                std::cout << "Value '" << val.name() << "' received.\n";
                 this->agents[i]->generic_store[val.name()] = std::make_unique<VectorStore>(val.name());
                 if(val.has_integers()) {
                     this->agents[i]->generic_store[val.name()]->set(std::vector<int>(val.integers().values().begin(), val.integers().values().end()));
@@ -95,7 +99,7 @@ class DroneSimulation : public Simulation {
             }
 
             for(Map map : agent_info.maps()) {
-                // std::cout << "Map '" << map.name() << "' received.\n";
+                std::cout << "Map '" << map.name() << "' received.\n";
                 this->agents[i]->generic_map_store[map.name()] = std::make_unique<MapStore>(map.name());
                 for(MapValue map_value: map.values()) {
                     if(map_value.key_case() == 1) { /* Int */
@@ -542,6 +546,7 @@ int main(int, char**)
                     conf.line_thickness = 2.f;
                     ImGui::Plot("plot", conf);
                     ImGui::End();
+                } else {
                 }
             }
 

@@ -102,7 +102,20 @@ class Drone : public Agent {
                     }
                 }
                 if(missing_data) {
+                    // std::cout << "Node " << this->get_id() << " lacks data on something: " << missing_agent << " at angle " << new_angle << "\n";
                     this->generic_store["goal"]->set(new_angle);
+
+                    if(new_angle == angle) {
+                        // std::cout << "Node " << this->get_id() << " lacks data on something current angle ( " << new_angle << ", " << angle << " ) with agent : " << missing_agent << "\n";
+                        this->generic_store["timeout"]->set(std::get<int>(this->generic_store["timeout"]->get(0)) + 1);
+                    } else {
+                        this->generic_store["timeout"]->set(0);
+                    }
+                    if(std::get<int>(this->generic_store["timeout"]->get(0)) >= 50) { // 0.5 second
+                        //std::cout << "Timeout reached for angle " << angle << " and agent " << missing_agent << " on agent " << this->get_id() << "\n";
+                        this->generic_map_store["power_curves"]->set(missing_agent, angle, -100.0);
+                        this->generic_store["timeout"]->set(0);
+                    }
                     break;
                 }
             }
@@ -209,8 +222,12 @@ class Drone : public Agent {
         }
 
         void main() {
+            this->generic_store["timeout"] = std::make_unique<VectorStore>("timeout");
+            this->generic_store["timeout"]->set(0);
+
             this->generic_store["range"] = std::make_unique<VectorStore>("range");
             this->generic_store["range"]->set(360);
+
             this->generic_store["goal"] = std::make_unique<VectorStore>("goal");
             this->generic_store["goal"]->set(-1);
 
@@ -235,7 +252,7 @@ class Drone : public Agent {
         }
 
         ~Drone() {
-            std::cout << this->get_id() << "," << "end" << "," << *(this->generic_store["last_change"]) << "," << constrainAngleDeg(glm::degrees(magnetometer)) << "\n";
+            // std::cout << this->get_id() << "," << "end" << "," << *(this->generic_store["last_change"]) << "," << constrainAngleDeg(glm::degrees(magnetometer)) << "\n";
         }
 };
 
@@ -335,8 +352,17 @@ class DroneSimulation : public Simulation {
 
             /* Answer creation */
             std::string outgoing_message;
-            double power = -100.0;
-            power = this->gains[loss_query.source_agent_id()][loss_query.dest_agent_id()] + this->gains[loss_query.dest_agent_id()][loss_query.source_agent_id()];
+
+            double power = 0.0;
+            
+            if(this->agents[loss_query.source_agent_id()]->get_type() == "Drone") {
+                power += this->gains[loss_query.source_agent_id()][loss_query.dest_agent_id()];
+            }
+
+            if(this->agents[loss_query.dest_agent_id()]->get_type() == "Drone") {
+                power += this->gains[loss_query.dest_agent_id()][loss_query.source_agent_id()];
+            }
+
             loss_answer.set_power(power);
             loss_answer.SerializeToString(&outgoing_message);
 
