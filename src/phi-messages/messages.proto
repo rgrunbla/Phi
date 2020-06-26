@@ -1,4 +1,8 @@
 syntax = "proto3";
+package phi;
+
+message Ack {
+}
 
 message GlobalContainer {
     enum MessageType {
@@ -26,8 +30,8 @@ message Meso {
         LOSS_ANSWER = 1; /* Phi to NS-3 */
         
         /* Propagation Delay */
-        DELAY_QUERY = 2; /* NS-3 to Phi */
-        DELAY_ANSWER = 3; /* Phi to NS-3 */
+        GET_POSITION = 2; /* NS-3 to Phi */
+        SET_POSITION = 3; /* NS-3 to Phi */
 
         /* Agents positions */
         POSITIONS = 4; /* Bi-directional */
@@ -38,6 +42,11 @@ message Meso {
         /* A frame has been received by a node */
         MONITOR_QUERY = 6; /* NS-3 to Phi */
         MONITOR_ANSWER = 7; /* Phi to NS-3 */
+
+        POSITION = 8;
+        GET_ORIENTATION = 9;
+        SET_ORIENTATION = 10;
+        ORIENTATION = 11;
     }
     MessageType type = 1;
     int32 simulation_id = 2;
@@ -140,7 +149,8 @@ message Throughputs {
 
 message InitQuery {
     int32 agent_number = 1;
-    repeated AgentInfo info = 2;
+    repeated string agent_type = 2;
+    repeated int32 agent_id = 3;
 }
 
 message InitAnswer {
@@ -162,16 +172,6 @@ message LossAnswer {
     double power = 1;
 }
 
-message DelayQuery {
-    double clock = 1;
-    int32 source_agent_id = 2;
-    int32 dest_agent_id = 3;
-}
-
-message DelayAnswer {
-    double delay = 1;
-}
-
 message Positions {
     repeated float agent_positions = 1;
     repeated float agent_orientations = 2;
@@ -182,4 +182,46 @@ message MonitorQuery {
     int32 source_agent_id = 2;
     int32 dest_agent_id = 3;
     double power = 4;
+}
+
+/* ZMQ Mobility Model */
+
+message GetPosition {
+    double clock = 1;
+    int32 agent_id = 2;
+}
+
+message SetPosition {
+    double clock = 1;
+    int32 agent_id = 2;
+    float x = 3;
+    float y = 4;
+    float z = 5;
+}
+
+message Position {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message GetOrientation {
+    double clock = 1;
+    int32 agent_id = 2;
+}
+
+message SetOrientation {
+    double clock = 1;
+    int32 agent_id = 2;
+    float x = 3;
+    float y = 4;
+    float z = 5;
+    float w = 6;
+}
+
+message Orientation {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float w = 4;
 }

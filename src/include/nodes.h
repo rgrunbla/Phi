@@ -37,7 +37,7 @@ class Node {
                 return QVector4D(this->agent_orientation.x, this->agent_orientation.y, this->agent_orientation.z, this->agent_orientation.w);
             } */
 
-            void Parse(AgentInfo node) {
+            void Parse(phi::AgentInfo node) {
                 agent_position = {node.agent_position(0), node.agent_position(1), node.agent_position(2)};
                 // Warning: the order is not the same in memory and in the dquat initialization !
                 agent_orientation.w = node.agent_orientation(0);

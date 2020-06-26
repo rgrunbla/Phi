@@ -1,94 +1,102 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
-#include <iostream>
-#include <queue>
-#include <memory>
-#include <map>
 #include "clock.h"
-#include <zmq.hpp>
 #include "event.h"
+#include <iostream>
+#include <map>
+#include <memory>
+#include <queue>
+#include <zmq.hpp>
 
 #define VIZ 1
 
 class Agent;
 
-template<typename T> Agent * createInstance() { return new T; }
-typedef std::map<std::string, Agent*(*)()> map_type;
+template <typename T> Agent *createInstance() { return new T; }
+typedef std::map<std::string, Agent *(*)()> map_type;
 
 class Simulation {
-    public:
-        Simulation();
-        virtual ~Simulation();
+public:
+  Simulation();
+  virtual ~Simulation();
 
-        /* Start the simulation */
-        void start();
-        void loop();
-        void end();
+  /* Start the simulation */
+  void start();
+  void loop();
+  void end();
 
-        /* Environment */
-        virtual void init() = 0;
-        virtual void environment() = 0;
-        virtual void handleMeso(int32_t, std::string) = 0;
+  /* Environment */
+  virtual void init() = 0;
+  virtual void environment() = 0;
 
-        /* Setters and getters */
-        void set_id(int32_t id);
-        int32_t get_id();
+  void handleMeso(int32_t, std::string);
+  virtual void handleMesoCustom(int32_t, std::string) = 0;
 
-        void set_number_of_agents(int32_t);
-        int32_t get_number_of_agents() const;
+  void getPosition(std::string);
+  void setPosition(std::string);
+  void getOrientation(std::string);
+  void setOrientation(std::string);
 
-        void schedule_event(Event);
-        void add_agent(std::shared_ptr<Agent>);
+  /* Setters and getters */
+  void set_id(int32_t id);
+  int32_t get_id();
 
-        void set_cursor(double);
-        double get_cursor() const; 
+  void set_number_of_agents(int32_t);
+  int32_t get_number_of_agents() const;
 
-        void set_duration(double);
-        double get_duration() const;
+  void schedule_event(Event);
+  void add_agent(std::shared_ptr<Agent>);
 
-        bool ended() const;
+  void set_cursor(double);
+  double get_cursor() const;
 
-        std::shared_ptr<Clock> get_clock();
+  void set_duration(double);
+  double get_duration() const;
 
-        void set_meta(std::string);
-        void set_map(map_type);
-        std::shared_ptr<Agent> new_agent(std::string);
+  bool ended() const;
 
-        /* Agents */
-        std::vector<std::shared_ptr<Agent>> agents;
+  std::shared_ptr<Clock> get_clock();
 
-        /* Visualization */
-        void plot();
-        int32_t iter;
-        
-        /* ZeroMQ */
-        std::shared_ptr<zmq::socket_t> zmq_socket;
-        std::shared_ptr<zmq::socket_t> zmq_visualization_socket;
-        
-        std::shared_ptr<zmq::context_t> zmq_context;
+  void set_meta(std::string);
+  void set_map(map_type);
+  std::shared_ptr<Agent> new_agent(std::string);
 
-    private:
-        /* Unique id of this simulation */
-        int32_t id;
+  /* Agents */
+  std::vector<std::shared_ptr<Agent>> agents;
 
-        /* Clock of the simulation */
-        std::shared_ptr<Clock> clock;
+  /* Visualization */
+  void plot();
+  int32_t iter;
 
-        /* Duration of the simulation */
-        double duration;
+  /* ZeroMQ */
+  std::shared_ptr<zmq::socket_t> zmq_socket;
+  std::shared_ptr<zmq::socket_t> zmq_visualization_socket;
 
-        /* Events queue */
-        std::priority_queue<Event, std::vector<Event>, std::greater<std::vector<Event>::value_type>> event_queue;
+  std::shared_ptr<zmq::context_t> zmq_context;
 
-        /* Number of agents in the simulation */
-        int32_t number_of_agents;
+private:
+  /* Unique id of this simulation */
+  int32_t id;
 
-        /* Has the simulation finished ? */
-        bool simulation_ended = false;
+  /* Clock of the simulation */
+  std::shared_ptr<Clock> clock;
 
-        map_type map;
+  /* Duration of the simulation */
+  double duration;
 
+  /* Events queue */
+  std::priority_queue<Event, std::vector<Event>,
+                      std::greater<std::vector<Event>::value_type>>
+      event_queue;
+
+  /* Number of agents in the simulation */
+  int32_t number_of_agents;
+
+  /* Has the simulation finished ? */
+  bool simulation_ended = false;
+
+  map_type map;
 };
 
 #endif // SIMULATION_H

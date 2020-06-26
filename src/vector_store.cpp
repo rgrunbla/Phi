@@ -67,7 +67,7 @@ void VectorStore::print() {
         std::cout << "\n";
 }
 
-void VectorStore::serialize(Value* value) {
+void VectorStore::serialize(phi::Value* value) {
     std::string message;
     value->set_name(this->name);
     std::visit(overload{

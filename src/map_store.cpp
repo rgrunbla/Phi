@@ -63,10 +63,10 @@ int MapStore::size() {
     return this->values.size();
 }
 
-void MapStore::serialize(Map* map) {
+void MapStore::serialize(phi::Map* map) {
     map->set_name(this->name);
     for( auto const& [key, val] : this->values ) {
-        MapValue * map_value = map->add_values();
+        phi::MapValue * map_value = map->add_values();
         std::visit(overload{
             [&] (int value) { map_value->set_int_key(value); },
             [&] (float value) { map_value->set_float_key(value); },
