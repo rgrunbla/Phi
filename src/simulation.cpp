@@ -6,7 +6,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <helpers.h>
 #include <memory>
-#include <phi-messages/messages.pb.h>
+#include <ns3-zmq-messages/zmq-propagation-messages.pb.h>
 
 Simulation::Simulation() {
   this->last_plot = 0.0;

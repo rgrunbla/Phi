@@ -6,7 +6,7 @@
 #include <glm/gtc/random.hpp>
 #include <glm/gtx/norm.hpp>
 #include <array>
-#include "phi-messages/messages.pb.h"
+#include "ns3-zmq-messages/zmq-propagation-messages.pb.h"
 
 #define PI glm::pi<double>()
 

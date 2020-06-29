@@ -3,7 +3,7 @@
 
 #include <deque>
 #include <math.h>
-#include <phi-messages/messages.pb.h>
+#include <ns3-zmq-messages/zmq-propagation-messages.pb.h>
 #include <zmq.hpp>
 
 #define M_PI 3.14159265358979323846

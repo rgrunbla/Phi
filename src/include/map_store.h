@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <map>
-#include <phi-messages/messages.pb.h>
+#include <ns3-zmq-messages/zmq-propagation-messages.pb.h>
 #include <string>
 #include <variant>
 #include <vector>

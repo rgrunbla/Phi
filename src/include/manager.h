@@ -10,7 +10,7 @@
 #include <list>
 #include <math.h>
 #include <memory>
-#include <phi-messages/messages.pb.h>
+#include <ns3-zmq-messages/zmq-propagation-messages.pb.h>
 #include <zmq.hpp>
 
 template <typename T> class Manager {

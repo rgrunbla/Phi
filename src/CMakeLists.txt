@@ -23,12 +23,12 @@ include(cmake/imgui/imgui_plot.cmake)
 
 # set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
 
-add_subdirectory(phi-messages)
+add_subdirectory(ns3-zmq-messages)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories("include")
 
 add_executable(Phi phi.cpp simulation.cpp map_store.cpp vector_store.cpp event.cpp clock.cpp agent.cpp)
 add_executable(Viz viz.cpp simulation.cpp map_store.cpp vector_store.cpp event.cpp clock.cpp agent.cpp imgui_impl_opengl3.cpp imgui_impl_glfw.cpp)
-target_link_libraries(Phi glm ${ZeroMQ_LIBRARY} phi-messages)
-target_link_libraries(Viz ImGui glfw ${GLFW_LIBRARIES} glad OpenGL::GL ${ZeroMQ_LIBRARY} phi-messages imgui_plot)
+target_link_libraries(Phi glm ${ZeroMQ_LIBRARY} ns3-zmq-messages)
+target_link_libraries(Viz ImGui glfw ${GLFW_LIBRARIES} glad OpenGL::GL ${ZeroMQ_LIBRARY} ns3-zmq-messages imgui_plot)

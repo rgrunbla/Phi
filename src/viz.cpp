@@ -27,7 +27,7 @@
 #include "shaders.h"
 #include "simulation.h"
 
-#include "phi-messages/messages.pb.h"
+#include "ns3-zmq-messages/zmq-propagation-messages.pb.h"
 
 #define U glm::dvec3(1.0, 0.0, 0.0)
 #define V glm::dvec3(0.0, 1.0, 0.0)

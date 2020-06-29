@@ -1,5 +1,5 @@
 #include "agent.h"
-#include "phi-messages/messages.pb.h"
+#include "ns3-zmq-messages/zmq-propagation-messages.pb.h"
 
 Agent::Agent() {
     this->position = {0.0, 0.0, 0.0};

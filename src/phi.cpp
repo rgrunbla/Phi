@@ -16,7 +16,7 @@
 #include "math.h"
 #include "simulation.h"
 #include "vector_store.h"
-#include <phi-messages/messages.pb.h>
+#include <ns3-zmq-messages/zmq-propagation-messages.pb.h>
 
 class Drone : public Agent {
 public:

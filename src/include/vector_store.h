@@ -2,7 +2,7 @@
 #define VECTOR_STORE_H
 
 #include <iostream>
-#include <phi-messages/messages.pb.h>
+#include <ns3-zmq-messages/zmq-propagation-messages.pb.h>
 #include <string>
 #include <variant>
 #include <vector>

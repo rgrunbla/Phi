@@ -1,6 +1,6 @@
 #include <iostream>
 #include "map_store.h"
-#include "phi-messages/messages.pb.h"
+#include "ns3-zmq-messages/zmq-propagation-messages.pb.h"
 
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
 template<class... Ts> overload(Ts...) -> overload<Ts...>;
