@@ -541,7 +541,7 @@ public:
                 << ((rtp[2] + M_PI) * 180.0) / M_PI << "\n";
       exit(-1);
     }
-    return antenna_gain[index] + 4.0;
+    return antenna_gain[index] + 3.0;
   }
 
   void init() {
