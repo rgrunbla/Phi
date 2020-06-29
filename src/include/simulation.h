@@ -9,7 +9,7 @@
 #include <queue>
 #include <zmq.hpp>
 
-#define VIZ 1
+#define VIZ 0
 
 class Agent;
 
