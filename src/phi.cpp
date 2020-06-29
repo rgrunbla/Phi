@@ -608,9 +608,8 @@ public:
     }
 
     loss_answer.set_power(power);
-    loss_answer.SerializeToString(&outgoing_message);
 
-    MesoSend(this->get_id(), outgoing_message,
+    MesoSend(this->get_id(), loss_answer,
              phi::Meso_MessageType_LOSS_ANSWER, *this->zmq_socket);
   }
 
@@ -638,9 +637,7 @@ public:
 
     /* Answer creation */
     /* Empty message */
-    std::string outgoing_message;
-    MesoSend(this->get_id(), outgoing_message,
-             phi::Meso_MessageType_MONITOR_ANSWER, *this->zmq_socket);
+    SendAck(*this->zmq_socket);
   }
 };
 
