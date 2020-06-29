@@ -1,0 +1,227 @@
+syntax = "proto3";
+package phi;
+
+message Ack {
+}
+
+message GlobalContainer {
+    enum MessageType {
+        META = 0;
+        MESO = 1;
+    }
+    MessageType type = 1;
+    bytes content = 2;
+}
+
+message Meta {
+    enum MessageType {
+        INIT_QUERY = 0;
+        INIT_ANSWER = 1;
+        END_QUERY = 2;
+    }
+    MessageType type = 1;
+    bytes content = 2;
+}
+
+message Meso {
+    enum MessageType {
+        /* Propagation Loss */
+        LOSS_QUERY = 0; /* NS-3 to Phi */
+        LOSS_ANSWER = 1; /* Phi to NS-3 */
+        
+        /* Propagation Delay */
+        GET_POSITION = 2; /* NS-3 to Phi */
+        SET_POSITION = 3; /* NS-3 to Phi */
+
+        /* Agents positions */
+        POSITIONS = 4; /* Bi-directional */
+        
+        /* End of the simulation */
+        END = 5; /* NS-3 to Phi */
+
+        /* A frame has been received by a node */
+        MONITOR_QUERY = 6; /* NS-3 to Phi */
+        MONITOR_ANSWER = 7; /* Phi to NS-3 */
+
+        POSITION = 8;
+        GET_ORIENTATION = 9;
+        SET_ORIENTATION = 10;
+        ORIENTATION = 11;
+    }
+    MessageType type = 1;
+    int32 simulation_id = 2;
+    bytes content = 3;
+}
+
+message Integers {
+    repeated int32 values = 1;
+}
+
+message Floats {
+    repeated float values = 1;
+}
+
+message Doubles {
+    repeated double values = 1;
+}
+
+message Strings {
+    repeated string values = 1;
+}
+
+message Value {
+    string name = 1;
+    oneof content {
+        Integers integers = 2;
+        Floats floats = 3;
+        Doubles doubles = 4;
+        Strings strings = 5;
+    }
+}
+
+/* Map */
+
+message MapValue {
+    oneof key {
+        int32 int_key = 1;
+        float float_key = 2;
+        double double_key = 3;
+        string string_key = 4;
+    }
+    oneof value {
+        Integers integers = 5;
+        Floats floats = 6;
+        Doubles doubles = 7;
+        Strings strings = 8;
+    }
+}
+
+message Map {
+    string name = 1;
+    repeated MapValue values = 2;
+}
+
+message AgentInfo {
+    string agent_type = 1;
+    repeated float agent_position = 2;
+    repeated float agent_orientation = 3;
+    repeated Value values = 4;
+    repeated Map maps = 5;
+}
+
+message AgentInfos {
+    repeated AgentInfo infos = 1;
+}
+
+/* Visualization message */
+message Viz {
+    enum MessageType {
+        POSITIONS = 0;
+        POWERS = 1;
+        THROUGHPUTS = 2;
+    }
+    MessageType type = 1;
+    int32 simulation_id = 2;
+    double clock = 3;
+    bytes content = 4;
+}
+
+message Power {
+    int32 receiver_agent_id = 1;
+    int32 sender_agent_id = 2;
+    repeated float power = 3;
+}
+
+message Powers {
+    repeated Power powers = 1;
+}
+
+message Throughput {
+    string source = 1;
+    string destination = 2;
+    float throughput = 3;
+}
+
+message Throughputs {
+    repeated Throughput throughputs = 1;
+}
+/* Initialization message */
+
+message InitQuery {
+    int32 agent_number = 1;
+    repeated string agent_type = 2;
+    repeated int32 agent_id = 3;
+}
+
+message InitAnswer {
+    int32 simulation_id = 1;
+}
+
+message EndQuery {
+    int32 simulation_id = 1;
+}
+
+message LossQuery {
+    double clock = 1;
+    int32 source_agent_id = 2;
+    int32 dest_agent_id = 3;
+    double power = 4;
+}
+
+message LossAnswer {
+    double power = 1;
+}
+
+message Positions {
+    repeated float agent_positions = 1;
+    repeated float agent_orientations = 2;
+}
+
+message MonitorQuery {
+    double clock = 1;
+    int32 source_agent_id = 2;
+    int32 dest_agent_id = 3;
+    double power = 4;
+}
+
+/* ZMQ Mobility Model */
+
+message GetPosition {
+    double clock = 1;
+    int32 agent_id = 2;
+}
+
+message SetPosition {
+    double clock = 1;
+    int32 agent_id = 2;
+    float x = 3;
+    float y = 4;
+    float z = 5;
+}
+
+message Position {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message GetOrientation {
+    double clock = 1;
+    int32 agent_id = 2;
+}
+
+message SetOrientation {
+    double clock = 1;
+    int32 agent_id = 2;
+    float x = 3;
+    float y = 4;
+    float z = 5;
+    float w = 6;
+}
+
+message Orientation {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float w = 4;
+}
