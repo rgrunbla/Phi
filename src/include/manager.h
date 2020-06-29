@@ -115,7 +115,6 @@ void Manager<T>::create_simulation(std::string meta_content) {
   phi::InitAnswer init_answer = phi::InitAnswer();
   /* A new simulation in NS-3 has been launched, and ask for a simulation ID */
   std::shared_ptr<T> simulation = std::shared_ptr<T>(new T());
-  std::string message;
 
   simulation->zmq_socket = this->zmq_socket;
   simulation->zmq_visualization_socket = this->zmq_visualization_socket;
@@ -127,8 +126,7 @@ void Manager<T>::create_simulation(std::string meta_content) {
   this->simulations.push_back(simulation);
 
   init_answer.set_simulation_id(simulation->get_id());
-  init_answer.SerializeToString(&message);
-  MetaSend(message, phi::Meta_MessageType_INIT_ANSWER, *this->zmq_socket);
+  MetaSend(init_answer, phi::Meta_MessageType_INIT_ANSWER, *this->zmq_socket);
 }
 
 template <typename T>
@@ -166,9 +164,8 @@ void Manager<T>::end_simulation(std::string meta_content) {
       }
     }
   }
-  infos.SerializeToString(&message);
   this->simulations[end_query.simulation_id()]->end();
-  MesoSend(end_query.simulation_id(), message, phi::Meso_MessageType_POSITIONS,
+  MesoSend(end_query.simulation_id(), infos, phi::Meso_MessageType_POSITIONS,
            *this->zmq_socket);
 }
 

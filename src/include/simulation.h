@@ -67,7 +67,7 @@ public:
 
   /* Visualization */
   void plot();
-  int32_t iter;
+  bool should_plot();
 
   /* ZeroMQ */
   std::shared_ptr<zmq::socket_t> zmq_socket;
@@ -84,6 +84,9 @@ private:
 
   /* Duration of the simulation */
   double duration;
+
+  /* Last plot */
+  double last_plot;
 
   /* Events queue */
   std::priority_queue<Event, std::vector<Event>,

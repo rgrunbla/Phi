@@ -9,6 +9,7 @@
 #include <phi-messages/messages.pb.h>
 
 Simulation::Simulation() {
+  this->last_plot = 0.0;
   this->clock = std::shared_ptr<Clock>(new Clock());
   this->clock->set_time(0.0);
   this->set_cursor(0.0);
@@ -27,11 +28,11 @@ double Simulation::get_duration() const { return this->duration; }
 
 void Simulation::set_id(int32_t id) { this->id = id; }
 
+bool Simulation::should_plot() { return (this->clock->get_cursor() - this->last_plot) >= 0.100; }
+
 int32_t Simulation::get_id() { return this->id; }
 
 void Simulation::loop() {
-  this->iter = this->iter + 1;
-
   while (true) {
     /* We execute all the events before the cursor */
     if (!this->event_queue.empty()) {
@@ -104,11 +105,10 @@ void Simulation::loop() {
 
     this->environment();
   }
-  if (VIZ) {
-    if ((this->iter % 100) == 0) {
+
+  if (this->should_plot()) {
       this->plot();
-      this->iter = 1;
-    }
+      this->last_plot = this->clock->get_cursor();
   }
 }
 
@@ -275,9 +275,7 @@ void Simulation::getPosition(std::string message) {
   position.set_x(agent_position.x);
   position.set_y(agent_position.y);
   position.set_z(agent_position.z);
-  std::string outgoing_message;
-  position.SerializeToString(&outgoing_message);
-  MesoSend(this->get_id(), outgoing_message, phi::Meso_MessageType_POSITION,
+  MesoSend(this->get_id(), position, phi::Meso_MessageType_POSITION,
            *this->zmq_socket);
 }
 
@@ -317,8 +315,6 @@ void Simulation::getOrientation(std::string message) {
   orientation.set_z(agent_orientation.z);
   orientation.set_w(agent_orientation.w);
 
-  std::string outgoing_message;
-  orientation.SerializeToString(&outgoing_message);
-  MesoSend(this->get_id(), outgoing_message, phi::Meso_MessageType_ORIENTATION,
+  MesoSend(this->get_id(), orientation, phi::Meso_MessageType_ORIENTATION,
            *this->zmq_socket);
 }

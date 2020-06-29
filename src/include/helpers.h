@@ -42,14 +42,16 @@ inline static int s_sendmore(zmq::socket_t &socket, char *str) {
   return size;
 }
 
-inline static void GlobalSend(std::string message,
+inline static void GlobalSend(google::protobuf::MessageLite &message,
                               phi::GlobalContainer_MessageType message_type,
                               zmq::socket_t &zmq_socket) {
+  std::string content;
   phi::GlobalContainer global_container = phi::GlobalContainer();
-  global_container.set_content(message);
+  message.SerializeToString(&content);
+  global_container.set_content(content);
   global_container.set_type(message_type);
-  global_container.SerializeToString(&message);
-  send(zmq_socket, message);
+  global_container.SerializeToString(&content);
+  send(zmq_socket, content);
 }
 
 inline static void MetaSend(google::protobuf::MessageLite &message,
