@@ -28,7 +28,7 @@ double Simulation::get_duration() const { return this->duration; }
 
 void Simulation::set_id(int32_t id) { this->id = id; }
 
-bool Simulation::should_plot() { return (this->clock->get_cursor() - this->last_plot) >= 0.100; }
+bool Simulation::should_plot() { return VIZ && ((this->clock->get_cursor() - this->last_plot) >= 0.100); }
 
 int32_t Simulation::get_id() { return this->id; }
 
