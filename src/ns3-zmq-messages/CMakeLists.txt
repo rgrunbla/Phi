@@ -1,0 +1,6 @@
+INCLUDE(FindProtobuf)
+FIND_PACKAGE(Protobuf REQUIRED)
+INCLUDE_DIRECTORIES(${PROTOBUF_INCLUDE_DIR})
+PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER zmq-propagation-messages.proto)
+ADD_LIBRARY(ns3-zmq-messages ${PROTO_HEADER} ${PROTO_SRC})
+target_link_libraries(ns3-zmq-messages INTERFACE ${Protobuf_LIBRARIES})
