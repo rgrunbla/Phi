@@ -45,7 +45,7 @@ template <typename T> Manager<T>::Manager(map_type map) {
   this->zmq_context = std::shared_ptr<zmq::context_t>(new zmq::context_t());
   this->zmq_socket = std::shared_ptr<zmq::socket_t>(
       new zmq::socket_t(*(this->zmq_context), zmq::socket_type::rep));
-  this->zmq_socket->bind("ipc:///tmp/PhiEndpoint");
+  this->zmq_socket->bind("inproc:///tmp/PhiEndpoint");
 
   if (VIZ) {
     this->zmq_visualization_socket = std::shared_ptr<zmq::socket_t>(
